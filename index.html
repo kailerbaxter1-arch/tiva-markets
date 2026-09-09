@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TIVA MARKETS - Volatility 100</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{margin:0;background:#0a0e1a;color:white;font-family:sans-serif;padding:15px}
+.card{background:#151a2b;padding:20px;border-radius:16px;margin-top:20px}
+input{width:100%;padding:12px;margin-bottom:10px;border-radius:8px;background:#0a0e1a;border:1px solid #333;color:white;box-sizing:border-box}
+button{width:100%;padding:14px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
+.green{background:#00ff88;color:black}
+.red{background:#ff4444;color:white}
+.gray{background:#333;color:white}
+.flex{display:flex;gap:10px}
+.big{font-size:36px;font-weight:900;text-align:center;margin:10px 0}
+.center{text-align:center}
+</style>
+</head>
+<body>
+<div style="max-width:480px;margin:0 auto">
+<h1 style="color:#00ff88;margin:0">TIVA MARKETS</h1>
+<p style="opacity:.6;margin:5px 0">Volatility 100 • Rise/Fall • Live Trading</p>
+
+<div id="auth" class="card">
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button class="gray" onclick="signUp()">Create Account</button>
+<button class="green" onclick="signIn()" style="margin-top:10px">Login</button>
+</div>
+
+<div id="app" style="display:none">
+<div class="card flex" style="justify-content:space-between">
+<div><div style="opacity:.6;font-size:12px">DEMO BALANCE</div><div id="demoBal" style="font-size:22px;font-weight:800">$10000.00</div></div>
+<div><div style="opacity:.6;font-size:12px">REAL BALANCE</div><div id="realBal" style="font-size:22px;font-weight:800;color:#00ff88">$0.00</div></div>
+</div>
+
+<div class="card center">
+<div style="opacity:.6;font-size:12px">VOLATILITY 100 INDEX</div>
+<div id="price" class="big">100.000</div>
+<div id="result" style="font-weight:800;height:20px"></div>
+<div class="flex" style="margin-top:20px">
+<button class="green" style="font-size:18px;padding:18px" onclick="trade('Rise')">RISE ▲</button>
+<button class="red" style="font-size:18px;padding:18px" onclick="trade('Fall')">FALL ▼</button>
+</div>
+<input id="amount" type="number" value="10" style="margin-top:15px">
+<p style="font-size:11px;opacity:.4">Payout 90% • 3 sec expiry</p>
+</div>
+
+<div class="card">
+<h3 style="margin:0">Deposit</h3>
+<p style="font-size:12px;opacity:.6">Mpesa & USDT TRC20 - Admin will approve</p>
+<button class="green" onclick="alert('Send Mpesa to Till: 123456 - Then WhatsApp screenshot to admin')">Mpesa Deposit</button>
+<button class="gray" onclick="alert('USDT TRC20 Address: TXXXX... (I will set your real address next)')" style="margin-top:10px">USDT TRC20</button>
+<button class="gray" onclick="logout()" style="margin-top:20px;opacity:.5">Logout</button>
+</div>
+</div>
+
+<p style="text-align:center;opacity:.2;font-size:10px;margin-top:30px">Connected to Supabase • tiva-markets live</p>
+</div>
+
+<script>
+const SUPA_URL="https://nfbzzarndalydboqvzxm.supabase.co";
+const SUPA_KEY="sb_publishable_xds8pjrbxeBDh7oy4lxRVg_d_10GFLu";
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+let user=null, demoBalance=10000, price=100;
+
+setInterval(()=>{ price += (Math.random()-0.5)*0.3; document.getElementById('price').innerText=price.toFixed(3); },800);
+
+async function checkSession(){
+ const {data} = await supa.auth.getSession();
+ if(data.session?.user) loadProfile(data.session.user);
+}
+checkSession();
+
+async function loadProfile(u){
+ user=u;
+ const {data} = await supa.from("profiles").select("*").eq("id", u.id).single();
+ if(data){ demoBalance=data.demo_balance; document.getElementById('demoBal').innerText="$"+demoBalance.toFixed(2); document.getElementById('realBal').innerText="$"+Number(data.real_balance).toFixed(2); }
+ document.getElementById('auth').style.display="none";
+ document.getElementById('app').style.display="block";
+}
+
+async function signUp(){
+ const email=document.getElementById('email').value, password=document.getElementById('password').value;
+ const {data, error} = await supa.auth.signUp({email,password});
+ if(error) return alert(error.message);
+ await supa.from("profiles").insert({id:data.user.id,email,real_balance:0,demo_balance:10000,account_number:"TIVA"+Math.floor(Math.random()*1000000)});
+ alert("Account created! Now click Login");
+}
+async function signIn(){
+ const email=document.getElementById('email').value, password=document.getElementById('password').value;
+ const {data, error} = await supa.auth.signInWithPassword({email,password});
+ if(error) return alert(error.message);
+ loadProfile(data.user);
+}
+async function trade(type){
+ if(!user) return alert("Login first");
+ const amount=parseFloat(document.getElementById('amount').value);
+ const entry=price;
+ document.getElementById('result').innerText="Running...";
+ document.getElementById('result').style.color="white";
+ await new Promise(r=>setTimeout(r,3000));
+ const exit=price + (Math.random()-0.5)*2;
+ const win=(type==="Rise" && exit>entry) || (type==="Fall" && exit<entry);
+ const profit=win ? amount*0.9 : -amount;
+ document.getElementById('result').innerText= win ? `WIN +$${profit.toFixed(2)}` : `LOSS $${profit.toFixed(2)}`;
+ document.getElementById('result').style.color= win ? "#00ff88" : "#ff4444";
+ await supa.from("trades").insert({user_id:user.id,symbol:"Volatility 100 Index",type,entry_price:entry,expiry_price:exit,amount,result:win?"win":"loss",profit});
+ demoBalance+=profit;
+ document.getElementById('demoBal').innerText="$"+demoBalance.toFixed(2);
+ await supa.from("profiles").update({demo_balance:demoBalance}).eq("id", user.id);
+}
+async function logout(){ await supa.auth.signOut(); location.reload(); }
+</script>
+</body>
+</html>
