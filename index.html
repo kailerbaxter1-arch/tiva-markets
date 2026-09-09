@@ -1,111 +1,371 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>TIVA MARKETS - Volatility 100</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIVA MARKETS - Pro Trading</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        navy: '#0A1045',
+        gold: '#D4AF37',
+        goldDark: '#B8941F'
+      }
+    }
+  }
+}
+</script>
 <style>
-body{margin:0;background:#080c18;color:#fff;font-family:Inter,Arial,sans-serif;padding:0}
-.header{display:flex;justify-content:space-between;align-items:center;background:#111627;padding:12px 14px;position:sticky;top:0;z-index:10;border-bottom:1px solid #1e2740}
-.tabs{display:flex;gap:8px}
-.tab{padding:8px 14px;border-radius:20px;font-size:12px;font-weight:bold;border:1px solid #333;cursor:pointer}
-.tab.active{background:#00ff88;color:#000;border-color:#00ff88}
-.card{background:#12182b;margin:10px;border-radius:14px;padding:14px;border:1px solid #1e2740}
-.big{font-size:38px;font-weight:900;text-align:center;letter-spacing:1px}
-input{width:100%;padding:12px;border-radius:10px;background:#000;color:#fff;border:1px solid #2a3558;box-sizing:border-box;margin-bottom:8px}
-button{border:none;border-radius:10px;padding:14px;font-weight:900;cursor:pointer}
-.green{background:#00ff88;color:#000} .red{background:#ff3344;color:#fff} .gray{background:#232d4a;color:#fff}
-.flex{display:flex;gap:10px}
-.badge{font-size:10px;background:#00ff88;color:#000;padding:2px 6px;border-radius:6px}
-.deposit-box{border:2px solid #00ff88 !important}
-small{color:#8a93ad}
+body{font-family:Inter,system-ui;background:#f8fafc}
+.hide{display:none!important}
+.tab-active{border-bottom:3px solid #D4AF37;color:#0A1045;font-weight:700}
+.market-item:active{background:#f1f5f9}
 </style>
 </head>
-<body>
-<div class="header">
-<b style="color:#00ff88;letter-spacing:1px">TIVA MARKETS</b>
-<div id="balBox" style="font-size:12px">Demo: $10000.00</div>
+<body class="max-w-[430px] mx-auto bg-white min-h-screen shadow-2xl relative pb-[80px]">
+
+<!-- TOP NAVY HEADER -->
+<div id="topHeader" class="bg-navy text-white px-4 pt-12 pb-3 sticky top-0 z-50">
+  <div class="flex justify-between items-center mb-4">
+    <div class="flex items-center gap-2"><i class="fa-solid fa-star text-gold text-xl"></i><span class="font-bold tracking-wide">TIVA MARKETS</span></div>
+    <div class="flex gap-4"><i class="fa-regular fa-bell"></i><i class="fa-regular fa-user"></i></div>
+  </div>
+  <div class="flex gap-6 text-[13px] overflow-x-auto">
+    <button onclick="switchTopTab('overview')" id="top-overview" class="tab-active pb-2 whitespace-nowrap">Overview</button>
+    <button onclick="switchTopTab('wallet')" id="top-wallet" class="opacity-70 pb-2">Wallet</button>
+    <button onclick="switchTopTab('partners')" id="top-partners" class="opacity-70 pb-2">Partners</button>
+    <button onclick="switchTopTab('trading')" id="top-trading" class="opacity-70 pb-2">Trading</button>
+    <button onclick="switchTopTab('p2p')" id="top-p2p" class="opacity-70 pb-2">P2P</button>
+  </div>
 </div>
 
-<div style="padding:0 10px" class="tabs">
-<div id="demoTab" class="tab active" onclick="switchAcc('demo')">DEMO $10,000</div>
-<div id="realTab" class="tab" onclick="switchAcc('real')">REAL $0.00</div>
+<!-- SCREEN 1: LOGIN -->
+<div id="screen-login" class="px-6 pt-16">
+  <div class="text-center mb-10">
+    <i class="fa-solid fa-star text-gold text-4xl"></i>
+    <h1 class="text-2xl font-bold text-navy mt-3">TIVA MARKETS</h1>
+    <p class="text-gray-500 text-sm mt-1">Premium Trading Platform</p>
+  </div>
+  <button class="w-full border rounded-xl py-3 mb-3 flex justify-center items-center gap-2"><i class="fa-brands fa-google"></i> Continue with Google</button>
+  <button class="w-full border rounded-xl py-3 mb-3 flex justify-center items-center gap-2"><i class="fa-brands fa-facebook"></i> Continue with Facebook</button>
+  <button class="w-full border rounded-xl py-3 mb-6 flex justify-center items-center gap-2"><i class="fa-brands fa-apple"></i> Continue with Apple</button>
+  <input class="w-full border rounded-xl py-3 px-4 mb-3" placeholder="Email">
+  <button onclick="showApp()" class="w-full bg-gold hover:bg-goldDark text-white font-bold py-3 rounded-xl">Log in</button>
+  <p class="text-center text-xs text-gray-400 mt-6">Till 4372049 • USDT TQmzNK...NCPJ</p>
 </div>
 
-<div class="card" style="text-align:center;padding:18px 14px">
-<div style="font-size:11px;color:#8a93ad">Volatility 100 Index • <span style="color:#00ff88">● LIVE</span> • Spread 0.0</div>
-<div id="price" class="big">100.000</div>
-<canvas id="chart" height="80" style="width:100%;margin-top:8px;background:#080c18;border-radius:8px"></canvas>
+<!-- SCREEN 2: HOME OVERVIEW -->
+<div id="screen-home" class="hide">
+  <div class="px-4 py-4">
+    <p class="text-gray-500 text-sm">Est. total value</p>
+    <h2 class="text-3xl font-bold text-navy" id="totalBalance">0.00 <span class="text-lg font-normal">USD</span></h2>
+    <p class="text-xs text-gray-400">≈ KES 0 • Real + Demo</p>
+    <div class="flex gap-8 mt-5">
+      <div onclick="openDeposit()" class="text-center"><div class="w-14 h-14 bg-gold rounded-full flex items-center justify-center text-white text-xl"><i class="fa-solid fa-arrow-down"></i></div><p class="text-xs mt-2 font-semibold">Deposit</p></div>
+      <div class="text-center opacity-60"><div class="w-14 h-14 bg-navy rounded-full flex items-center justify-center text-white text-xl"><i class="fa-solid fa-right-left"></i></div><p class="text-xs mt-2">Transfer</p></div>
+      <div onclick="openWithdraw()" class="text-center"><div class="w-14 h-14 bg-navy rounded-full flex items-center justify-center text-white text-xl"><i class="fa-solid fa-arrow-up"></i></div><p class="text-xs mt-2">Withdraw</p></div>
+    </div>
+    <div class="mt-6 bg-navy rounded-xl p-4 text-white flex justify-between items-center">
+      <div><p class="text-sm opacity-80">Real Account</p><p class="font-bold text-lg" id="realBal">$0.00</p></div>
+      <span class="bg-gold px-3 py-1 rounded-full text-xs font-bold">USD</span>
+    </div>
+    <div class="mt-3 border rounded-xl p-4 flex justify-between">
+      <div><p class="text-sm text-gray-500">Demo Account</p><p class="font-bold text-lg">$10,000.00</p></div><span class="text-xs bg-gray-100 px-3 py-1 rounded-full">DEMO</span>
+    </div>
+  </div>
 </div>
 
-<div class="card flex">
-<input id="amt" type="number" value="10" min="1">
-<button class="gray" onclick="toggleDep()" style="width:110px">Deposit</button>
-<button class="gray" onclick="toggleWd()" style="width:110px">Withdraw</button>
+<!-- SCREEN: CFDS + MT5 -->
+<div id="screen-cfds" class="hide px-4 py-4">
+  <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-navy text-lg">CFDs - MT5</h3><button onclick="connectMT5()" class="bg-navy text-white text-xs px-4 py-2 rounded-full"><i class="fa-solid fa-link"></i> Connect MT5</button></div>
+  <div id="mt5Status" class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-xs mb-4">Not connected — Connect your MT5 account to trade Forex pairs. Day 3 we will link real MT5 API.</div>
+  <div class="space-y-3" id="cfdList"></div>
 </div>
 
-<div id="depBox" class="card deposit-box" style="display:none">
-<div style="display:flex;justify-content:space-between"><b style="color:#00ff88">DEPOSIT TO TIVA MARKETS</b><span class="badge">INSTANT</span></div>
-<small>Store Name: TIVA MARKETS | Admin approves 2 mins | Notify 254114350345</small>
-
-<div style="background:#000;padding:12px;border-radius:10px;margin-top:12px;border:1px solid #232d4a">
-<div style="font-weight:900;color:#00ff88;font-size:13px">1. LIPA NA MPESA - BUY GOODS</div>
-<div style="margin-top:6px;font-size:13px">Business: <b>TIVA MARKETS</b></div>
-<div style="margin-top:4px">Till: <span style="color:#00ff88;font-size:26px;font-weight:900">4372049</span></div>
-<div style="font-size:11px;color:#8a93ad">Store No: 4895251 • Till Name shows TIVA MARKETS</div>
-<div style="background:#12182b;padding:8px;border-radius:8px;margin-top:8px;font-size:11px;color:#aab">
-1. Mpesa → Lipa na Mpesa → Buy Goods<br>2. Till: 4372049<br>3. Amount e.g. 1000<br>4. Enter PIN → Send<br>5. Copy Mpesa Code (e.g. QGH7...)
-</div>
+<!-- SCREEN: OPTIONS MARKETS LIST - ALL VOLATILITIES -->
+<div id="screen-options" class="hide">
+  <div class="px-4 py-3 flex gap-2 overflow-x-auto text-xs">
+    <button class="bg-navy text-white px-4 py-2 rounded-full whitespace-nowrap">Synthetics</button>
+    <button class="bg-gray-100 px-4 py-2 rounded-full whitespace-nowrap">Forex</button>
+    <button class="bg-gray-100 px-4 py-2 rounded-full whitespace-nowrap">Crash/Boom</button>
+  </div>
+  <div id="marketsList" class="divide-y"></div>
 </div>
 
-<div style="background:#000;padding:12px;border-radius:10px;margin-top:10px;border:1px solid #232d4a">
-<div style="font-weight:900;color:#00ff88;font-size:13px">2. USDT TRC20</div>
-<small style="color:#ffcc00">Network TRC20 ONLY - Don't use ERC20</small>
-<div style="background:#12182b;padding:8px;border-radius:8px;word-break:break-all;font-size:12px;margin-top:6px;border:1px dashed #333">TQmzNKnSGc2WVyLbHjkubmP8XHaynkNCPJ</div>
+<!-- SCREEN: TRADE - INDEPENDENT CHART + ALL TRADE TYPES -->
+<div id="screen-trade" class="hide">
+  <div class="bg-navy text-white px-4 py-3 flex justify-between items-center">
+    <div><p class="font-bold" id="tradeSymbol">Volatility 100 (1s) Index</p><p class="text-xs opacity-70 flex items-center gap-2"><span id="tradePrice">879.45</span> <span id="tradeChange" class="text-green-400">▲ 1.23%</span></p></div>
+    <i onclick="showScreen('screen-options')" class="fa-solid fa-xmark"></i>
+  </div>
+  <div id="chart" class="h-[280px] bg-[#0A1045]"></div>
+  <div class="px-3 py-3 bg-white border-t">
+    <div class="flex justify-between items-center mb-3">
+      <p class="text-sm font-bold">Trade Type</p>
+      <label class="flex items-center gap-2 text-xs"><input type="checkbox" id="tivaBot" class="accent-gold"> <span class="bg-navy text-white px-2 py-1 rounded">Tiva Bot Auto</span> <span id="botStatus" class="text-gray-400">OFF</span></label>
+    </div>
+    <div class="grid grid-cols-2 gap-2 text-[11px] mb-3" id="tradeTypes">
+      <!-- injected by JS -->
+    </div>
+    <div class="flex gap-2 mb-3">
+      <div class="flex-1"><p class="text-xs text-gray-500">Duration</p><select id="duration" class="w-full border rounded-lg py-2 px-2 text-sm"><option>5 ticks</option><option>10 ticks</option><option>1 min</option><option>5 min</option></select></div>
+      <div class="flex-1"><p class="text-xs text-gray-500">Stake (USD)</p><input id="stake" value="2" type="number" class="w-full border rounded-lg py-2 px-2 text-sm"></div>
+    </div>
+    <div id="digitOptions" class="hide grid grid-cols-5 gap-2 mb-3"></div>
+    <div class="flex gap-3">
+      <button onclick="placeTrade('rise')" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold"><i class="fa-solid fa-arrow-up"></i> <span id="btnRise">Rise</span><br><span class="text-xs font-normal">Payout $3.80</span></button>
+      <button onclick="placeTrade('fall')" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold"><i class="fa-solid fa-arrow-down"></i> <span id="btnFall">Fall</span><br><span class="text-xs font-normal">Payout $3.80</span></button>
+    </div>
+    <p id="tradeResult" class="text-center text-sm mt-3 font-bold"></p>
+  </div>
 </div>
 
-<input id="mpesaCode" placeholder="Enter Mpesa Code + Amount. Ex: QGH7X9A1 1000" style="margin-top:12px">
-<button class="green" onclick="submitDep()">Submit Deposit - Wait 2 Min Approval</button>
-<small style="display:block;text-align:center;margin-top:6px">Deposits go directly to Till 4372049 & USDT wallet</small>
+<!-- SCREEN: DEPOSIT LIST -->
+<div id="screen-deposit" class="hide px-4 py-4">
+  <h3 class="font-bold text-navy text-lg mb-1">Make your first deposit</h3><p class="text-xs text-gray-500 mb-4">Choose method • Auto-credited + Email</p>
+  <div onclick="openDepositStep1('USDT')" class="border rounded-xl p-4 flex justify-between items-center mb-3"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">₮</div><div><p class="font-bold text-sm">USDT Tether TRC20</p><p class="text-xs text-green-600">Recommended • Auto</p></div></div><i class="fa-solid fa-chevron-right text-gray-300"></i></div>
+  <div onclick="openDepositStep1('USDC')" class="border rounded-xl p-4 flex justify-between items-center mb-3"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">$</div><div><p class="font-bold text-sm">USDC ERC20</p><p class="text-xs text-gray-500">Auto-credit</p></div></div><i class="fa-solid fa-chevron-right text-gray-300"></i></div>
+  <div onclick="openDepositMpesa()" class="border-2 border-red-200 bg-red-50 rounded-xl p-4 flex justify-between items-center"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold">M-PESA</div><div><p class="font-bold text-sm">MPESA Mobile Money</p><p class="text-xs text-red-600">Popular in Kenya • Till 4372049 • Auto KES→USD</p></div></div><span class="bg-red-600 text-white text-[10px] px-2 py-1 rounded">POPULAR</span></div>
 </div>
 
-<div id="wdBox" class="card" style="display:none;border:1px solid #ff3344">
-<b style="color:#ff3344">WITHDRAW - REAL ACCOUNT</b><br>
-<small>Min $10 • Processed 5 mins • Mpesa or USDT</small>
-<input id="wdAmt" placeholder="Amount e.g. 500" style="margin-top:10px">
-<input id="wdPhone" placeholder="Mpesa Number or USDT Address">
-<button class="red" onclick="submitWd()">Request Withdraw</button>
+<!-- SCREEN: DEPOSIT STEP 1 USDT -->
+<div id="screen-deposit-step1" class="hide px-4 py-4">
+  <p class="text-xs text-gray-500">Step 1 of 3 • <span id="depMethod">USDT</span></p>
+  <h3 class="font-bold text-lg mt-1">Choose amount</h3>
+  <div class="grid grid-cols-3 gap-2 mt-4 mb-4">
+    <button onclick="setAmount(10)" class="border py-3 rounded-xl text-sm font-bold">$10</button><button onclick="setAmount(50)" class="border-2 border-gold bg-yellow-50 py-3 rounded-xl text-sm font-bold">$50 +2% Bonus</button><button onclick="setAmount(100)" class="border py-3 rounded-xl text-sm font-bold">$100</button>
+  </div>
+  <p class="text-xs text-gray-500">Enter amount USD</p><input id="depAmount" value="50" class="w-full border-2 border-navy rounded-xl py-3 px-4 mt-2 font-bold">
+  <p class="text-xs text-green-600 mt-2">Bonus +2% → You get $51.00</p>
+  <button onclick="openDepositStep2()" class="w-full bg-gold text-white font-bold py-3 rounded-xl mt-6">Continue to Deposit</button>
 </div>
 
-<div class="flex" style="padding:10px">
-<button class="green" style="flex:1;padding:22px;font-size:20px" onclick="trade('RISE')">RISE ▲</button>
-<button class="red" style="flex:1;padding:22px;font-size:20px" onclick="trade('FALL')">FALL ▼</button>
+<!-- SCREEN: DEPOSIT STEP 2 USDT -->
+<div id="screen-deposit-step2" class="hide px-4 py-4 text-center">
+  <p class="text-xs text-gray-500">Step 2 of 3 • USDT TRC20 • Auto-credited</p>
+  <h3 class="font-bold text-lg mt-2">Send USDT</h3>
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TQmzNKnSGc2WVyLbHjkubmP8XHaynkNCPJ" class="mx-auto mt-4 rounded-xl border">
+  <p class="text-xs text-gray-500 mt-4">Deposit Address (TRC20)</p>
+  <p class="font-mono text-sm bg-gray-100 p-3 rounded-xl mt-2 break-all">TQmzNKnSGc2WVyLbHjkubmP8XHaynkNCPJ</p>
+  <button onclick="copyAddr()" class="w-full border border-navy text-navy font-bold py-3 rounded-xl mt-3"><i class="fa-regular fa-copy"></i> Copy Address</button>
+  <button onclick="confirmDeposit()" class="w-full bg-gold text-white font-bold py-3 rounded-xl mt-3">I've Sent Funds — Auto Credit</button>
+  <p class="text-[11px] text-gray-400 mt-4">After sending, system auto-detects via TronGrid every 30s and credits USD + sends email. No manual code needed from Day 2.</p>
 </div>
 
-<div class="card" style="min-height:60px">
-<b style="font-size:12px">Trade History</b>
-<div id="history" style="font-size:11px;color:#8a93ad;margin-top:6px">No trades yet</div>
+<!-- SCREEN: DEPOSIT MPESA - USD->KES x132 -->
+<div id="screen-deposit-mpesa" class="hide px-4 py-4">
+  <p class="text-xs text-gray-500">MPESA • Till 4372049 Buy Goods • Store TIVA MARKETS 4895251 • Auto</p>
+  <h3 class="font-bold text-lg mt-2">Deposit via M-PESA</h3>
+  <div class="mt-4">
+    <p class="text-sm font-semibold">Enter amount in USD</p>
+    <input id="mpesaUsd" oninput="convertUsdKes()" type="number" value="10" class="w-full border-2 border-navy rounded-xl py-3 px-4 mt-2 font-bold text-lg" placeholder="10">
+    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mt-3">
+      <p class="text-xs text-gray-600">Rate: 1 USD = 132 KES (fixed)</p>
+      <p class="font-bold text-navy text-lg mt-1" id="kesDisplay">≈ KES 1,320</p>
+      <p class="text-xs text-gray-500 mt-1">You will receive STK Push for <span id="kesPush">1,320</span> KES to your phone</p>
+    </div>
+    <p class="text-sm font-semibold mt-4">M-Pesa phone</p>
+    <input id="mpesaPhone" class="w-full border rounded-xl py-3 px-4 mt-2" placeholder="2547XXXXXXXX">
+    <button onclick="sendStk()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl mt-6"><i class="fa-solid fa-mobile"></i> Send STK Push KES <span id="stkBtn">1,320</span></button>
+    <p id="stkResult" class="text-center text-sm mt-3"></p>
+    <p class="text-[11px] text-gray-400 mt-4">From Day 2: Safaricom Daraja callback auto-credits USD = KES/132 + sends email "Deposit $10 credited".</p>
+  </div>
 </div>
 
-<p style="text-align:center;color:#3a4566;font-size:9px;padding:10px">TIVA MARKETS © 2026 • Till 4372049 • Store 4895251 • Support: 254114350345</p>
+<!-- SCREEN: WITHDRAW -->
+<div id="screen-withdraw" class="hide px-4 py-4">
+  <h3 class="font-bold text-lg">Withdraw</h3><p class="text-xs text-gray-500">Email first + Manual verification</p>
+  <div class="mt-4 space-y-3">
+    <div class="border rounded-xl p-3 flex justify-between"><span class="text-sm">USDT TRC20</span><input type="radio" name="wd" checked></div>
+    <div class="border rounded-xl p-3 flex justify-between"><span class="text-sm">MPESA Mobile Money</span><input type="radio" name="wd"></div>
+  </div>
+  <p class="text-sm mt-4">Amount USD</p><input id="wdAmount" value="10" class="w-full border rounded-xl py-3 px-4 mt-2">
+  <button onclick="requestWithdraw()" class="w-full bg-navy text-white font-bold py-3 rounded-xl mt-6">Request Withdrawal</button>
+</div>
+
+<!-- SCREEN: WITHDRAWAL REQUESTED -->
+<div id="screen-withdraw-done" class="hide px-4 py-8 text-center">
+  <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto text-green-600 text-2xl"><i class="fa-solid fa-check"></i></div>
+  <h3 class="font-bold text-lg mt-4">Withdrawal Requested!</h3>
+  <div class="bg-gray-50 rounded-xl p-4 text-left text-sm mt-6 space-y-2">
+    <div class="flex justify-between"><span class="text-gray-500">Method</span><span id="wdDoneMethod">USDT TRC20</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Amount</span><span id="wdDoneAmount">$100.00</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Fee</span><span>$1.00</span></div>
+    <div class="flex justify-between font-bold"><span>You will receive</span><span id="wdDoneReceive">$99.00</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Status</span><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Pending Manual Verification</span></div>
+  </div>
+  <p class="text-xs text-gray-500 mt-4">Email sent: "Withdrawal requested — manual verification 5-15 mins". You approve in Admin panel → email "Approved + Sent".</p>
+  <button onclick="showScreen('screen-home')" class="w-full bg-gold text-white font-bold py-3 rounded-xl mt-6">Back to Home</button>
+</div>
+
+<!-- PORTFOLIO -->
+<div id="screen-portfolio" class="hide px-4 py-4">
+  <h3 class="font-bold text-lg">Portfolio</h3>
+  <p class="text-xs text-gray-500">Positions from independent TIVA chart engine</p>
+  <div id="portfolioList" class="mt-4 text-sm text-gray-400">No open positions yet — place trade in Options → Markets</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t flex justify-around py-2 text-[11px] z-50">
+  <button onclick="showScreen('screen-home')" class="flex flex-col items-center text-navy"><i class="fa-solid fa-house text-lg"></i>Home</button>
+  <button onclick="showScreen('screen-cfds')" class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-chart-line text-lg"></i>CFDs</button>
+  <button onclick="showScreen('screen-options')" class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-arrow-trend-up text-lg"></i>Options</button>
+  <button onclick="showScreen('screen-portfolio')" class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-briefcase text-lg"></i>Portfolio</button>
+</div>
 
 <script>
-let price=100.000; let demoBal=10000; let realBal=0; let mode='demo'; let prices=[100,100.2,99.8,100.1,100];
-const priceEl=document.getElementById('price'); const chart=document.getElementById('chart'); const ctx=chart.getContext('2d');
-
-function switchAcc(m){mode=m; document.getElementById('demoTab').classList.toggle('active',m==='demo'); document.getElementById('realTab').classList.toggle('active',m==='real'); updateBal();}
-function updateBal(){const b=mode==='demo'?demoBal:realBal; document.getElementById('balBox').innerText=(mode==='demo'?'Demo':'Real')+': $'+b.toFixed(2); document.getElementById('demoTab').innerText='DEMO $'+demoBal.toFixed(0); document.getElementById('realTab').innerText='REAL $'+realBal.toFixed(2); }
-function toggleDep(){const e=document.getElementById('depBox'); e.style.display=e.style.display==='none'?'block':'none'; document.getElementById('wdBox').style.display='none';}
-function toggleWd(){const e=document.getElementById('wdBox'); e.style.display=e.style.display==='none'?'block':'none'; document.getElementById('depBox').style.display='none';}
-function submitDep(){const c=document.getElementById('mpesaCode').value; if(c.length<5)return alert('Enter Mpesa Code'); const amt=parseFloat(c.match(/(\d+)/g)?.pop())||10; alert('Deposit Received: '+c+'\n\nTill 4372049 will get money instantly.\nAdmin 254114350345 will approve and add $'+amt+' to your REAL balance in 2 mins!'); document.getElementById('mpesaCode').value=''; // Simulate approval after 5 sec for demo
-setTimeout(()=>{realBal+=amt; updateBal(); alert('Approved! $'+amt+' added to REAL account'); switchAcc('real');},5000);
+// NAV
+function showScreen(id){
+  document.querySelectorAll('[id^=screen-]').forEach(s=>s.classList.add('hide'));
+  document.getElementById(id).classList.remove('hide');
+  window.scrollTo(0,0);
 }
-function submitWd(){const a=parseFloat(document.getElementById('wdAmt').value); if(!a||a>realBal)return alert('Invalid amount or insufficient REAL balance'); alert('Withdraw $'+a+' requested to '+document.getElementById('wdPhone').value+'\nProcessing...');}
-function draw(){chart.width=chart.clientWidth; ctx.clearRect(0,0,chart.width,chart.height); ctx.strokeStyle='#00ff88'; ctx.lineWidth=2; ctx.beginPath(); const max=Math.max(...prices), min=Math.min(...prices); prices.forEach((p,i)=>{const x=i/(prices.length-1)*chart.width; const y=80-(p-min)/(max-min+0.1)*60-10; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}); ctx.stroke();}
-setInterval(()=>{price+=(Math.random()-0.5)*0.7; prices.push(price); if(prices.length>40)prices.shift(); priceEl.innerText=price.toFixed(3); priceEl.style.color=price>prices[prices.length-2]?'#00ff88':'#ff3344'; draw();},700);
-function trade(dir){const amt=parseFloat(document.getElementById('amt').value)||10; const bal=mode==='demo'?demoBal:realBal; if(amt>bal)return alert('Insufficient balance'); const entry=price; const id=Date.now(); document.getElementById('history').innerHTML='<div id="t'+id+'">⏳ '+dir+' $'+amt+' at '+entry.toFixed(3)+'...</div>'+document.getElementById('history').innerHTML; setTimeout(()=>{const exit=price; const win=(dir==='RISE'&&exit>entry)||(dir==='FALL'&&exit<entry); const profit=win?amt*0.95:-amt; if(mode==='demo')demoBal+=profit; else realBal+=profit; updateBal(); const el=document.getElementById('t'+id); if(el)el.innerHTML=(win?'✅ WIN':'❌ LOSS')+' '+dir+' $'+amt+' → '+(win?'+$'+(amt*0.95).toFixed(2):'-$'+amt)+' | '+entry.toFixed(3)+'→'+exit.toFixed(3); },4000);}
-updateBal(); draw();
+function switchTopTab(t){
+  document.querySelectorAll('[id^=top-]').forEach(b=>b.classList.remove('tab-active'));
+  document.getElementById('top-'+t).classList.add('tab-active');
+  if(t==='overview') showScreen('screen-home');
+}
+function showApp(){
+  document.getElementById('topHeader').classList.remove('hide');
+  showScreen('screen-home');
+}
+
+// MARKETS DATA - ALL
+const markets = [
+  {s:'Volatility 10 Index',p:4123.12,ch:'+0.45%'},{s:'Volatility 25 Index',p:5234.89,ch:'+1.12%'},{s:'Volatility 50 Index',p:6345.22,ch:'-0.33%'},{s:'Volatility 75 Index',p:7456.90,ch:'+0.78%'},{s:'Volatility 100 Index',p:8567.11,ch:'+1.45%'},
+  {s:'Volatility 10 (1s) Index',p:4123.55,ch:'+0.22%'},{s:'Volatility 25 (1s) Index',p:5235.10,ch:'-0.12%'},{s:'Volatility 50 (1s) Index',p:6346.00,ch:'+0.90%'},{s:'Volatility 75 (1s) Index',p:7457.33,ch:'+0.55%'},{s:'Volatility 100 (1s) Index',p:879.45,ch:'+1.23%'},
+  {s:'Crash 300 Index',p:3123.44,ch:'-2.11%'},{s:'Crash 500 Index',p:5123.44,ch:'-1.89%'},{s:'Crash 1000 Index',p:7123.44,ch:'-3.01%'},
+  {s:'Boom 300 Index',p:3323.44,ch:'+2.11%'},{s:'Boom 500 Index',p:5323.44,ch:'+1.89%'},{s:'Boom 1000 Index',p:7323.44,ch:'+3.01%'},
+  {s:'Jump 10 Index',p:4123.12,ch:'+0.12%'},{s:'Jump 25 Index',p:5234.12,ch:'+0.32%'},{s:'Jump 50 Index',p:6345.12,ch:'+0.42%'},{s:'Jump 75 Index',p:7456.12,ch:'+0.62%'},{s:'Jump 100 Index',p:8567.12,ch:'+0.72%'},
+  {s:'Step Index',p:8123.12,ch:'+0.11%'},{s:'Range Break 100',p:234.56,ch:'+0.05%'},{s:'Range Break 200',p:334.56,ch:'+0.15%'},
+  {s:'EUR/USD',p:1.0845,ch:'+0.12%'},{s:'GBP/USD',p:1.2745,ch:'-0.08%'},{s:'USD/JPY',p:149.23,ch:'+0.22%'},{s:'AUD/USD',p:0.6543,ch:'+0.05%'},
+];
+function renderMarkets(){
+  const el=document.getElementById('marketsList'); el.innerHTML='';
+  markets.forEach(m=>{
+    const d=document.createElement('div');
+    d.className='market-item px-4 py-3 flex justify-between items-center cursor-pointer';
+    d.innerHTML=`<div><p class="font-bold text-sm text-navy">${m.s}</p><p class="text-xs text-gray-500">${m.p}</p></div><div class="text-right"><p class="text-xs ${m.ch.startsWith('+')?'text-green-600':'text-red-600'}">${m.ch}</p><i class="fa-solid fa-chevron-right text-gray-300 text-xs"></i></div>`;
+    d.onclick=()=>openTrade(m.s,m.p);
+    el.appendChild(d);
+  });
+}
+renderMarkets();
+
+// CFDs
+function renderCFDs(){
+  const el=document.getElementById('cfdList'); el.innerHTML='';
+  ['EUR/USD 1.0845 +0.12%','GBP/USD 1.2745 -0.08%','GOLD 2034.12 +0.45%','USD/JPY 149.23 +0.22%'].forEach(c=>{
+    el.innerHTML+=`<div class="border rounded-xl p-4 flex justify-between"><div><p class="font-bold text-sm">${c.split(' ')[0]}</p><p class="text-xs text-gray-500">${c}</p></div><button class="bg-gold text-white text-xs px-4 py-2 rounded-full font-bold">Start Trading</button></div>`;
+  });
+}
+renderCFDs();
+
+// TRADE TYPES
+const tradeTypes=[
+  {id:'risefall',name:'Rise/Fall',desc:'Up or Down'},
+  {id:'higherlower',name:'Higher/Lower',desc:'Barrier'},
+  {id:'touchnotouch',name:'Touch/No Touch',desc:'Touch barrier'},
+  {id:'matchesdiffers',name:'Matches/Differs',desc:'Last digit'},
+  {id:'evenodd',name:'Even/Odd',desc:'Digit even/odd'},
+  {id:'overunder',name:'Over/Under',desc:'Digit over/under'},
+  {id:'accumulator',name:'Accumulators',desc:'Grows 1-5%'},
+  {id:'turbo',name:'Turbo',desc:'Multipliers'},
+];
+function renderTradeTypes(){
+  const el=document.getElementById('tradeTypes'); el.innerHTML='';
+  tradeTypes.forEach((t,i)=>{
+    el.innerHTML+=`<button onclick="selectTradeType('${t.id}')" id="tt-${t.id}" class="border rounded-lg py-2 px-2 text-left ${i===0?'border-gold bg-yellow-50':''}"><p class="font-bold">${t.name}</p><p class="text-[10px] text-gray-500">${t.desc}</p></button>`;
+  });
+}
+renderTradeTypes();
+let currentType='risefall';
+function selectTradeType(id){
+  currentType=id;
+  document.querySelectorAll('[id^=tt-]').forEach(b=>b.classList.remove('border-gold','bg-yellow-50'));
+  document.getElementById('tt-'+id).classList.add('border-gold','bg-yellow-50');
+  if(id==='evenodd'){ document.getElementById('digitOptions').classList.remove('hide'); document.getElementById('digitOptions').innerHTML='<button class="border py-2 rounded">Even</button><button class="border py-2 rounded">Odd</button>'.repeat(1); document.getElementById('btnRise').innerText='Even'; document.getElementById('btnFall').innerText='Odd';}
+  else if(id==='matchesdiffers'){ document.getElementById('digitOptions').classList.remove('hide'); document.getElementById('digitOptions').innerHTML=Array.from({length:10},(_,i)=>`<button class="border py-2 rounded">${i}</button>`).join(''); document.getElementById('btnRise').innerText='Matches'; document.getElementById('btnFall').innerText='Differs';}
+  else { document.getElementById('digitOptions').classList.add('hide'); document.getElementById('btnRise').innerText='Rise'; document.getElementById('btnFall').innerText='Fall';}
+}
+
+// CHART - Independent engine
+let chart, lineSeries, price=879.45;
+function initChart(){
+  const el=document.getElementById('chart');
+  chart=LightweightCharts.createChart(el,{layout:{background:{color:'#0A1045'},textColor:'#fff'},grid:{vertLines:{color:'#1a1f4a'},horzLines:{color:'#1a1f4a'}},height:280});
+  lineSeries=chart.addLineSeries({color:'#D4AF37',lineWidth:2});
+  let data=[]; let t=Math.floor(Date.now()/1000)-300;
+  for(let i=0;i<300;i++){ price+= (Math.random()-0.48)*0.8; data.push({time:t+i,value:price}); }
+  lineSeries.setData(data);
+  setInterval(()=>{ price+= (Math.random()-0.48)*1.2; document.getElementById('tradePrice').innerText=price.toFixed(2); lineSeries.update({time:Math.floor(Date.now()/1000),value:price}); },1000);
+}
+function openTrade(sym,pr){
+  showScreen('screen-trade');
+  document.getElementById('tradeSymbol').innerText=sym;
+  document.getElementById('tradePrice').innerText=pr;
+  if(!chart) initChart();
+}
+
+// DEPOSIT FLOWS
+function openDeposit(){ showScreen('screen-deposit'); }
+function openDepositStep1(m){ document.getElementById('depMethod').innerText=m; showScreen('screen-deposit-step1'); }
+function setAmount(a){ document.getElementById('depAmount').value=a; }
+function openDepositStep2(){ showScreen('screen-deposit-step2'); }
+function copyAddr(){ navigator.clipboard.writeText('TQmzNKnSGc2WVyLbHjkubmP8XHaynkNCPJ'); alert('Copied: TQmzNKnSGc2WVyLbHjkubmP8XHaynkNCPJ'); }
+function confirmDeposit(){ alert('Deposit $'+document.getElementById('depAmount').value+' submitted! From Day 2 auto-credit + email will be sent. Balance will update automatically.'); showScreen('screen-home'); document.getElementById('realBal').innerText='$'+document.getElementById('depAmount').value+'.00'; document.getElementById('totalBalance').innerHTML=document.getElementById('depAmount').value+'.00 <span class="text-lg font-normal">USD</span>'; }
+
+function openDepositMpesa(){ showScreen('screen-deposit-mpesa'); convertUsdKes(); }
+function convertUsdKes(){
+  const usd=parseFloat(document.getElementById('mpesaUsd').value)||0;
+  const kes=usd*132;
+  document.getElementById('kesDisplay').innerText='≈ KES '+kes.toLocaleString();
+  document.getElementById('kesPush').innerText=kes.toLocaleString();
+  document.getElementById('stkBtn').innerText=kes.toLocaleString();
+}
+function sendStk(){
+  const usd=document.getElementById('mpesaUsd').value;
+  const kes=usd*132;
+  const phone=document.getElementById('mpesaPhone').value;
+  if(!phone){ alert('Enter Mpesa phone 2547...'); return; }
+  document.getElementById('stkResult').innerHTML=`<span class="text-green-600 font-bold">STK Push sent for KES ${kes.toLocaleString()} (${usd} USD) to ${phone}<br>Till 4372049 Buy Goods - Store TIVA MARKETS 4895251<br>Enter PIN to complete. Auto-credit Day 2.</span>`;
+  setTimeout(()=>{ alert(`Mpesa prompt KES ${kes} sent! After you enter PIN, balance $${usd} auto credited + email.`); document.getElementById('realBal').innerText='$'+usd+'.00'; document.getElementById('totalBalance').innerHTML=usd+'.00 <span class="text-lg font-normal">USD</span>'; showScreen('screen-home'); },1500);
+}
+
+// WITHDRAW
+function openWithdraw(){ showScreen('screen-withdraw'); }
+function requestWithdraw(){
+  const amt=document.getElementById('wdAmount').value;
+  document.getElementById('wdDoneAmount').innerText='$'+amt+'.00';
+  document.getElementById('wdDoneReceive').innerText='$'+(amt-1)+'.00';
+  showScreen('screen-withdraw-done');
+}
+
+// TRADE PLACE - Independent
+function placeTrade(dir){
+  const stake=document.getElementById('stake').value;
+  const sym=document.getElementById('tradeSymbol').innerText;
+  document.getElementById('tradeResult').innerText=`Trade placed: ${sym} ${dir.toUpperCase()} $${stake} - ${currentType} - Duration ${document.getElementById('duration').value} - Waiting result... (independent TIVA engine)`;
+  setTimeout(()=>{
+    const win=Math.random()>0.45;
+    document.getElementById('tradeResult').innerHTML=win?`<span class="text-green-600">WIN! +$${(stake*0.9).toFixed(2)} — Credited</span>`:`<span class="text-red-600">LOSS! -$${stake}</span>`;
+  },3000);
+}
+function connectMT5(){ document.getElementById('mt5Status').innerHTML='<span class="text-green-600 font-bold">MT5 Demo Connected! Login: 12345678 Server: TivaMarkets-Demo (Day 3 we connect real Manager API)</span>'; }
+
+// Tiva Bot
+document.getElementById('tivaBot')?.addEventListener('change',function(){
+  document.getElementById('botStatus').innerText=this.checked?'ON - Auto trading Volatility 100 (1s) 5 ticks $2':'OFF';
+  if(this.checked){ alert('Tiva Bot Auto ON — Will auto trade Rise/Fall 5 ticks $2 every 15 sec (Day 3 logic)'); }
+});
+
+// init
+document.getElementById('topHeader').classList.add('hide');
 </script>
 </body>
 </html>
