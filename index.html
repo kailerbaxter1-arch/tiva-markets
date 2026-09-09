@@ -6,113 +6,81 @@
 <title>TIVA MARKETS - Volatility 100</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{margin:0;background:#0a0e1a;color:white;font-family:sans-serif;padding:15px}
-.card{background:#151a2b;padding:20px;border-radius:16px;margin-top:20px}
-input{width:100%;padding:12px;margin-bottom:10px;border-radius:8px;background:#0a0e1a;border:1px solid #333;color:white;box-sizing:border-box}
-button{width:100%;padding:14px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
-.green{background:#00ff88;color:black}
-.red{background:#ff4444;color:white}
-.gray{background:#333;color:white}
-.flex{display:flex;gap:10px}
-.big{font-size:36px;font-weight:900;text-align:center;margin:10px 0}
-.center{text-align:center}
+body{margin:0;background:#0a0e1a;color:#fff;font-family:sans-serif;padding:10px}
+.card{background:#151a2b;padding:16px;border-radius:12px;margin-top:10px;border:1px solid #222}
+input{width:100%;padding:12px;margin-bottom:8px;border-radius:8px;background:#000;color:#fff;border:1px solid #333;box-sizing:border-box}
+button{width:100%;padding:14px;border-radius:8px;border:none;font-weight:bold;cursor:pointer}
+.green{background:#00ff88;color:#000} .red{background:#ff4444;color:#fff}
+.gray{background:#333;color:#fff} .flex{display:flex;gap:10px}
+.big{font-size:36px;font-weight:900;text-align:center}
 </style>
 </head>
 <body>
-<div style="max-width:480px;margin:0 auto">
-<h1 style="color:#00ff88;margin:0">TIVA MARKETS</h1>
-<p style="opacity:.6;margin:5px 0">Volatility 100 • Rise/Fall • Live Trading</p>
-
-<div id="auth" class="card">
+<div id="auth">
+<h1 style="color:#00ff88;text-align:center">TIVA MARKETS</h1>
+<p style="text-align:center;color:#888;font-size:12px">Volatility 100 Broker - Kenya</p>
+<div class="card">
 <input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button class="gray" onclick="signUp()">Create Account</button>
-<button class="green" onclick="signIn()" style="margin-top:10px">Login</button>
+<input id="pass" type="password" placeholder="Password">
+<button class="green" onclick="signup()">Create Account</button>
+<button class="gray" style="margin-top:8px" onclick="login()">Login</button>
+</div>
 </div>
 
 <div id="app" style="display:none">
-<div class="card flex" style="justify-content:space-between">
-<div><div style="opacity:.6;font-size:12px">DEMO BALANCE</div><div id="demoBal" style="font-size:22px;font-weight:800">$10000.00</div></div>
-<div><div style="opacity:.6;font-size:12px">REAL BALANCE</div><div id="realBal" style="font-size:22px;font-weight:800;color:#00ff88">$0.00</div></div>
+<div class="flex" style="justify-content:space-between;align-items:center;background:#151a2b;padding:10px;border-radius:10px">
+<b style="color:#00ff88">TIVA MARKETS</b><span id="bal">Balance: $10000.00 DEMO</span>
 </div>
-
-<div class="card center">
-<div style="opacity:.6;font-size:12px">VOLATILITY 100 INDEX</div>
+<div class="card" style="text-align:center">
+<div style="font-size:11px;color:#888">Volatility 100 Index</div>
 <div id="price" class="big">100.000</div>
-<div id="result" style="font-weight:800;height:20px"></div>
-<div class="flex" style="margin-top:20px">
-<button class="green" style="font-size:18px;padding:18px" onclick="trade('Rise')">RISE ▲</button>
-<button class="red" style="font-size:18px;padding:18px" onclick="trade('Fall')">FALL ▼</button>
+<div style="color:#00ff88;font-size:11px">● LIVE</div>
 </div>
-<input id="amount" type="number" value="10" style="margin-top:15px">
-<p style="font-size:11px;opacity:.4">Payout 90% • 3 sec expiry</p>
+<div class="card flex">
+<input id="amt" type="number" value="10" style="margin:0"><button class="gray" onclick="toggleDep()" style="width:120px">Deposit</button>
 </div>
 
-<div class="card">
-<h3 style="margin:0">Deposit</h3>
-<p style="font-size:12px;opacity:.6">Mpesa & USDT TRC20 - Admin will approve</p>
-<button class="green" onclick="alert('Send Mpesa to Till: 123456 - Then WhatsApp screenshot to admin')">Mpesa Deposit</button>
-<button class="gray" onclick="alert('USDT TRC20 Address: TXXXX... (I will set your real address next)')" style="margin-top:10px">USDT TRC20</button>
-<button class="gray" onclick="logout()" style="margin-top:20px;opacity:.5">Logout</button>
+<div id="depBox" class="card" style="display:none;border:1px solid #00ff88">
+<b>DEPOSIT TO TIVA MARKETS</b><br>
+<span style="font-size:11px;color:#888">Store Name: TIVA MARKETS | Admin approves 2 mins</span>
+
+<div style="background:#000;padding:10px;border-radius:8px;margin-top:10px;border:1px solid #333">
+<div style="color:#00ff88;font-weight:bold;font-size:13px">1. LIPA NA MPESA - BUY GOODS</div>
+<div style="font-size:12px;margin-top:4px">Store: <b>TIVA MARKETS</b></div>
+<div style="font-size:18px;margin-top:6px">Till Number: <span style="color:#00ff88;font-size:24px;font-weight:900">4372049</span></div>
+<div style="font-size:10px;color:#888">Store No: 4895251 | Notify: 254114350345</div>
+<div style="background:#1a1a1a;padding:8px;border-radius:6px;margin-top:8px;font-size:11px;color:#ccc">
+1. Mpesa → Lipa na Mpesa → Buy Goods<br>2. Enter Till: 4372049<br>3. Enter Amount e.g. 1000<br>4. PIN → Send<br>5. Copy Mpesa Code
 </div>
 </div>
 
-<p style="text-align:center;opacity:.2;font-size:10px;margin-top:30px">Connected to Supabase • tiva-markets live</p>
+<div style="background:#000;padding:10px;border-radius:8px;margin-top:10px;border:1px solid #333">
+<div style="color:#00ff88;font-weight:bold;font-size:13px">2. USDT TRC20</div>
+<div style="font-size:10px;color:#ffcc00">Network: TRC20 ONLY</div>
+<div style="background:#1a1a1a;padding:8px;border-radius:6px;word-break:break-all;font-size:12px;margin-top:4px">TQmzNKnSGc2WVyLbHjkubmP8XHaynkNCPJ</div>
+</div>
+
+<input id="code" placeholder="Enter Mpesa Code or TxID + Amount e.g. QGH7X123 1000" style="margin-top:10px">
+<button class="green" onclick="submitDep()">Submit Deposit - Wait Approval</button>
+<div style="font-size:10px;color:#666;text-align:center;margin-top:6px">Deposits go to Till 4372049 & USDT address above</div>
+</div>
+
+<div class="flex" style="margin-top:10px">
+<button class="green" style="padding:24px;font-size:20px" onclick="trade('RISE')">RISE ▲</button>
+<button class="red" style="padding:24px;font-size:20px" onclick="trade('FALL')">FALL ▼</button>
+</div>
+<p style="text-align:center;font-size:9px;color:#555;margin-top:20px">TIVA MARKETS © 2026</p>
 </div>
 
 <script>
-const SUPA_URL="https://nfbzzarndalydboqvzxm.supabase.co";
-const SUPA_KEY="sb_publishable_xds8pjrbxeBDh7oy4lxRVg_d_10GFLu";
-const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
-let user=null, demoBalance=10000, price=100;
+let balance=10000; let price=100.000; let user=null;
+setInterval(()=>{price+=(Math.random()-0.5)*0.6; document.getElementById('price').innerText=price.toFixed(3)},800);
 
-setInterval(()=>{ price += (Math.random()-0.5)*0.3; document.getElementById('price').innerText=price.toFixed(3); },800);
-
-async function checkSession(){
- const {data} = await supa.auth.getSession();
- if(data.session?.user) loadProfile(data.session.user);
-}
-checkSession();
-
-async function loadProfile(u){
- user=u;
- const {data} = await supa.from("profiles").select("*").eq("id", u.id).single();
- if(data){ demoBalance=data.demo_balance; document.getElementById('demoBal').innerText="$"+demoBalance.toFixed(2); document.getElementById('realBal').innerText="$"+Number(data.real_balance).toFixed(2); }
- document.getElementById('auth').style.display="none";
- document.getElementById('app').style.display="block";
-}
-
-async function signUp(){
- const email=document.getElementById('email').value, password=document.getElementById('password').value;
- const {data, error} = await supa.auth.signUp({email,password});
- if(error) return alert(error.message);
- await supa.from("profiles").insert({id:data.user.id,email,real_balance:0,demo_balance:10000,account_number:"TIVA"+Math.floor(Math.random()*1000000)});
- alert("Account created! Now click Login");
-}
-async function signIn(){
- const email=document.getElementById('email').value, password=document.getElementById('password').value;
- const {data, error} = await supa.auth.signInWithPassword({email,password});
- if(error) return alert(error.message);
- loadProfile(data.user);
-}
-async function trade(type){
- if(!user) return alert("Login first");
- const amount=parseFloat(document.getElementById('amount').value);
- const entry=price;
- document.getElementById('result').innerText="Running...";
- document.getElementById('result').style.color="white";
- await new Promise(r=>setTimeout(r,3000));
- const exit=price + (Math.random()-0.5)*2;
- const win=(type==="Rise" && exit>entry) || (type==="Fall" && exit<entry);
- const profit=win ? amount*0.9 : -amount;
- document.getElementById('result').innerText= win ? `WIN +$${profit.toFixed(2)}` : `LOSS $${profit.toFixed(2)}`;
- document.getElementById('result').style.color= win ? "#00ff88" : "#ff4444";
- await supa.from("trades").insert({user_id:user.id,symbol:"Volatility 100 Index",type,entry_price:entry,expiry_price:exit,amount,result:win?"win":"loss",profit});
- demoBalance+=profit;
- document.getElementById('demoBal').innerText="$"+demoBalance.toFixed(2);
- await supa.from("profiles").update({demo_balance:demoBalance}).eq("id", user.id);
-}
-async function logout(){ await supa.auth.signOut(); location.reload(); }
+function signup(){ const e=document.getElementById('email').value; const p=document.getElementById('pass').value; if(!e||p.length<6)return alert('Enter email & 6+ char pass'); localStorage.setItem('tiva_user',e); localStorage.setItem('tiva_pass',p); alert('Account Created! Now Login'); }
+function login(){ const e=document.getElementById('email').value; const p=document.getElementById('pass').value; if(localStorage.getItem('tiva_user')===e && localStorage.getItem('tiva_pass')===p){ document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; } else if(e && p.length>=6){ localStorage.setItem('tiva_user',e); document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; } else alert('Wrong login'); }
+function toggleDep(){ const b=document.getElementById('depBox'); b.style.display=b.style.display==='none'?'block':'none'; }
+function submitDep(){ const c=document.getElementById('code').value; if(!c)return alert('Enter Code'); alert('Deposit Submitted: '+c+'\nAdmin 254114350345 will approve in 2 mins and add to your balance!'); document.getElementById('code').value=''; }
+function trade(d){ const amt=parseFloat(document.getElementById('amt').value)||10; alert(d+' $'+amt+' placed at '+price.toFixed(3)); setTimeout(()=>{ const win=Math.random()>0.45; if(win){ balance+=amt*0.95; alert('WIN! +$'+(amt*0.95).toFixed(2)); } else { balance-=amt; alert('LOSS! -$'+amt); } document.getElementById('bal').innerText='Balance: $'+balance.toFixed(2)+' DEMO'; },4000); }
 </script>
 </body>
 </html>
