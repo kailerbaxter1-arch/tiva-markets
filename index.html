@@ -26,7 +26,10 @@
 
 <div id="screen-home" class="hide px-4 py-4">
 <div class="flex justify-between items-center">
-<div><p class="text-gray-500 text-sm">Est. total value</p><h2 class="text-3xl font-bold text-navy" id="totalBal">0.00 <span class="text-lg">USD</span></h2><p class="text-xs text-gray-400" id="totalSub">≈ KES 0 • Real + Demo</p></div>
+<div class="flex justify-between items-start">
+<div><p class="text-gray-500 text-sm">Est. total value</p><h2 class="text-3xl font-bold text-navy" id="totalBal">0.00 <span class="text-lg">USD</span></h2><p class="text-xs text-gray-400" id="balLabel">≈ Real Account</p></div>
+<div class="flex bg-gray-100 rounded-full p-1"><button id="realBtn" onclick="setBal('real')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-navy text-white">Real</button><button id="demoBtn" onclick="setBal('demo')" class="px-4 py-1.5 rounded-full text-xs font-bold text-gray-500">Demo</button></div>
+</div>
 <div class="flex bg-gray-100 rounded-full p-1"><button id="realBtn" onclick="setAccountType('real')" class="px-4 py-1.5 rounded-full text-xs font-bold bg-navy text-white">Real</button><button id="demoBtn" onclick="setAccountType('demo')" class="px-4 py-1.5 rounded-full text-xs font-bold text-gray-500">Demo</button></div>
 </div>
 <div class="flex gap-8 mt-5">
