@@ -106,7 +106,26 @@ function openTransfer(){showScreen('screen-transfer');}function doTransfer(){con
 function openWithdraw(){showScreen('screen-withdraw');}let wdType='USDT';function setWd(t){wdType=t;document.getElementById('wdUSDT').className=t==='USDT'?'border-2 border-gold bg-yellow-50 rounded-xl p-3 flex justify-between cursor-pointer':'border rounded-xl p-3 flex justify-between cursor-pointer';document.getElementById('wdMPESA').className=t==='MPESA'?'border-2 border-gold bg-yellow-50 rounded-xl p-3 flex justify-between cursor-pointer':'border rounded-xl p-3 flex justify-between cursor-pointer';document.getElementById('wdAddressBox').classList.toggle('hide',t!=='USDT');document.getElementById('wdMpesaBox').classList.toggle('hide',t!=='MPESA');}
 function requestWithdraw(){const amt=document.getElementById('wdAmount').value;const to=wdType==='USDT'?document.getElementById('wdAddress').value:document.getElementById('wdMpesaNum').value;if(!to){alert('Enter address/number');return;}document.getElementById('wdDoneMethod').innerText=wdType;document.getElementById('wdDoneAmount').innerText='$'+amt;document.getElementById('wdDoneTo').innerText=to;showScreen('screen-withdraw-done');}
 function placeTrade(dir){document.getElementById('tradeResult').innerText=`${dir.toUpperCase()} placed...`;setTimeout(()=>{const w=Math.random()>0.5;document.getElementById('tradeResult').innerHTML=w?'<span class="text-green-600">WIN!</span>':'<span class="text-red-600">LOSS</span>';},2000);}
-function connectMT5(){document.getElementById('mt5Status').innerHTML='<span class="text-green-600 font-bold">MT5 Connected!</span>';}
+function connectMT5(){
+ const tivaId = document.getElementById('uniqueID')? document.getElementById('uniqueID').innerText : 'TIVA-'+Math.floor(4895251+Math.random()*90000);
+ const modal = document.createElement('div');
+ modal.className='fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4';
+ modal.innerHTML='<div class="bg-white rounded-2xl p-5 w-full max-w-sm"><h3 class="font-bold text-navy text-lg">Create MT5 Password</h3><p class="text-xs text-gray-500 mt-1">Your TIVA ID will be your MT5 Login ID</p><div class="bg-yellow-50 border border-gold rounded-xl p-3 mt-4"><p class="text-xs text-gray-500">MT5 Login ID</p><p class="font-bold text-navy text-lg" id="mt5LoginId">'+tivaId+'</p><p class="text-xs text-gray-500 mt-2">Server: TIVA-Real</p></div><input id="mt5Pass" type="password" placeholder="Create MT5 Password (8+ chars)" class="w-full border-2 border-navy rounded-xl py-3 px-4 mt-4 text-sm"><input id="mt5Pass2" type="password" placeholder="Confirm Password" class="w-full border rounded-xl py-3 px-4 mt-2 text-sm"><p id="mt5Err" class="text-xs text-red-500 mt-2"></p><div class="flex gap-2 mt-4"><button onclick="this.closest(\'.fixed\').remove()" class="flex-1 border rounded-xl py-3">Cancel</button><button onclick="createMt5Account()" class="flex-1 bg-navy text-white rounded-xl py-3 font-bold">Create Account</button></div></div>';
+ document.body.appendChild(modal);
+}
+function createMt5Account(){
+ const p1=document.getElementById('mt5Pass').value;
+ const p2=document.getElementById('mt5Pass2').value;
+ const err=document.getElementById('mt5Err');
+ if(p1.length<8){err.innerText='Password min 8 chars';return;}
+ if(p1!==p2){err.innerText='Passwords do not match';return;}
+ const loginId=document.getElementById('mt5LoginId').innerText;
+ localStorage.setItem('tiva_mt5_login',loginId);
+ localStorage.setItem('tiva_mt5_pass',p1);
+ document.getElementById('mt5Status').innerHTML='<div class="flex justify-between items-center"><div><p class="font-bold text-green-700 text-sm">✓ MT5 Connected - '+loginId+'</p><p class="text-[11px]">Server: TIVA-Real | Login: '+loginId+'</p></div><button onclick="connectMT5()" class="text-xs bg-gray-100 px-3 py-1 rounded-full">Reset</button></div>';
+ document.querySelector('.fixed.inset-0').remove();
+ alert('MT5 Created! Login: '+loginId+' Saved. You can now trade CFDs.');
+}
 function generateTivaID(){const id='TIVA-'+Math.floor(4895251+Math.random()*90000);document.getElementById('uniqueID').innerText=id;document.getElementById('kycIDDisplay').innerText=id;return id;}
 function openKYC(){showScreen('screen-kyc');}
 function submitKYC(){const f=document.getElementById('idFront').files[0];if(!f){alert('Upload ID');return;}document.getElementById('kycResult').innerText='KYC Submitted! Pending Admin';document.getElementById('kycStatus').innerText='KYC Pending';setTimeout(()=>showScreen('screen-menu'),1000);}
