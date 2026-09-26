@@ -17,15 +17,45 @@
 <div class="flex gap-6 text-sm overflow-x-auto"><button class="border-b-2 border-gold pb-2 font-bold">Overview</button><button class="opacity-70 pb-2">Wallet</button><button class="opacity-70 pb-2">Partners</button><button class="opacity-70 pb-2">Trading</button><button class="opacity-70 pb-2">P2P</button></div>
 </div>
 
-<div id="screen-login" class="px-6 pt-16">
-<div class="text-center mb-10"><i class="fa-solid fa-star text-gold text-4xl"></i><h1 class="text-2xl font-bold text-navy mt-3">TIVA MARKETS</h1><p class="text-gray-500 text-sm mt-1">Premium Trading Platform</p></div>
+<div id="screen-login" class="px-6 pt-10">
+<div class="text-center mb-8"><i class="fa-solid fa-star text-gold text-4xl"></i><h1 class="text-2xl font-bold text-navy mt-3">TIVA MARKETS</h1><p class="text-gray-500 text-sm mt-1">Premium Trading Platform</p></div>
+
 <button class="w-full border rounded-xl py-3 mb-3 flex justify-center gap-2 text-sm font-semibold bg-white"><i class="fa-brands fa-google"></i> Continue with Google</button>
 <button class="w-full border rounded-xl py-3 mb-3 flex justify-center gap-2 text-sm font-semibold bg-white"><i class="fa-brands fa-facebook text-blue-600"></i> Continue with Facebook</button>
-<button class="w-full border rounded-xl py-3 mb-6 flex justify-center gap-2 text-sm font-semibold bg-white"><i class="fa-brands fa-apple"></i> Continue with Apple</button>
+<button class="w-full border rounded-xl py-3 mb-4 flex justify-center gap-2 text-sm font-semibold bg-white"><i class="fa-brands fa-apple"></i> Continue with Apple</button>
 <div class="flex items-center gap-3 my-4"><div class="flex-1 h-[1px] bg-gray-200"></div><span class="text-xs text-gray-400">OR</span><div class="flex-1 h-[1px] bg-gray-200"></div></div>
+
+<div id="loginForm">
 <input id="loginEmail" class="w-full border rounded-xl py-3 px-4 mb-3 text-sm" placeholder="Email e.g. admin@tiva.com">
-<button onclick="showApp()" class="w-full bg-gold hover:bg-yellow-600 text-white font-bold py-3 rounded-xl">Log in</button>
-<p class="text-center text-xs text-gray-400 mt-6">Till 4372049 • USDT TQmzNKn...NCPJ • Secure • Regulated</p>
+<input id="loginPass" type="password" class="w-full border rounded-xl py-3 px-4 mb-3 text-sm" placeholder="Password (8+ chars)">
+<button onclick="doLogin()" class="w-full bg-navy text-white font-bold py-3 rounded-xl">Log in</button>
+<p class="text-center text-xs mt-4">Don't have account? <a href="#" onclick="showSignup();return false;" class="text-gold font-bold">Sign up</a></p>
+<p class="text-center text-[11px] text-gray-400 mt-2"><a href="#" onclick="alert('Password reset will be email later');return false;">Forgot password?</a></p>
+</div>
+
+<div id="signupForm" class="hide">
+<h3 class="font-bold text-navy">Join 3M+ global traders</h3><p class="text-xs text-gray-500 mb-3">Tell us where you live</p>
+<select id="signupCountry" class="w-full border rounded-xl py-3 px-4 text-sm"><option>Kenya</option><option>Uganda</option><option>Tanzania</option><option>Nigeria</option><option>Other</option></select>
+<input id="signupEmail" class="w-full border rounded-xl py-3 px-4 mt-3 text-sm" placeholder="Email">
+<button onclick="doSignup()" class="w-full bg-[#ff444f] text-white font-bold py-3 rounded-xl mt-4">Sign up</button>
+<p class="text-center text-xs mt-4">Already have account? <a href="#" onclick="showLogin();return false;" class="text-gold font-bold">Log in</a></p>
+</div>
+
+<div id="verifyForm" class="hide text-center">
+<h3 class="font-bold text-lg text-navy">Verify your email</h3><p class="text-xs text-gray-500 mt-2">Enter 6-digit code sent to <b id="verifyEmailShow"></b></p>
+<input id="verifyCode" maxlength="6" class="w-full border-2 border-navy rounded-xl py-3 px-4 mt-4 text-center text-xl tracking-[8px]" placeholder="000000">
+<p class="text-[11px] mt-2 text-gray-400">Demo code: <span id="fakeCodeShow" class="text-red-500 font-bold"></span> (will be email later)</p>
+<button onclick="doVerify()" class="w-full bg-navy text-white font-bold py-3 rounded-xl mt-4">Verify</button>
+<p class="text-xs mt-3">Didn't get code? <a href="#" onclick="doSignup();return false;">Resend</a></p>
+</div>
+
+<div id="setPassForm" class="hide">
+<h3 class="font-bold text-lg text-navy">Set your password</h3><p class="text-xs text-gray-500 mb-4">Create 8+ characters</p>
+<input id="newPass" type="password" class="w-full border rounded-xl py-3 px-4 text-sm" placeholder="Create a password">
+<button onclick="doCreateAccount()" class="w-full bg-[#ff444f] text-white font-bold py-3 rounded-xl mt-4">Create Account</button>
+</div>
+
+<p class="text-center text-xs text-gray-400 mt-8">Till 4372049 • USDT TQmzNKn...NCPJ • Secure • Regulated</p>
 </div>
 
 <div id="screen-home" class="hide px-4 py-4">
@@ -68,7 +98,7 @@
 
 <div id="screen-portfolio" class="hide px-4 py-4"><h3 class="font-bold text-lg">Portfolio</h3><div class="mt-4 bg-navy rounded-xl p-4 text-white flex justify-between"><div><p class="text-xs opacity-70">Total Portfolio Value</p><p class="font-bold text-xl" id="portTotal">$0.00</p><p class="text-xs opacity-70" id="portMode">REAL MODE - Tap below to switch</p></div><span class="bg-gold px-3 py-1 rounded-full text-xs font-bold" id="portBadge">USD • REAL</span></div><div class="mt-4 grid grid-cols-2 gap-3"><div id="portRealCard" onclick="switchAccount('real')" class="border-2 border-gold bg-yellow-50 rounded-xl p-3 cursor-pointer"><p class="text-xs text-gray-500">Real ● Active</p><p class="font-bold text-lg" id="portReal">$0.00</p><p class="text-[10px] text-gold">Tap = Real</p></div><div id="portDemoCard" onclick="switchAccount('demo')" class="border rounded-xl p-3 cursor-pointer"><p class="text-xs text-gray-500">Demo</p><p class="font-bold text-lg">$10,000.00</p><p class="text-[10px] text-gray-400">Tap = Demo</p></div></div><div class="mt-4 border-2 border-dashed rounded-xl p-6 text-center text-sm text-gray-400">No open trades — Go to Options to trade</div></div>
 
-<div id="screen-menu" class="hide px-4 py-4"><button onclick="showScreen('screen-home')" class="text-sm text-navy mb-3"><i class="fa-solid fa-arrow-left"></i> Back</button><h3 class="font-bold text-lg">Menu / Profile</h3><div class="mt-4 space-y-3"><div class="border rounded-xl p-4 flex gap-3 items-center"><div class="w-12 h-12 bg-navy rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-user"></i></div><div><p class="font-bold" id="userEmail">admin@tiva.com</p><p class="text-xs">ID: <span id="uniqueID" class="font-bold text-navy">TIVA-4895251</span> • <span id="kycStatus" class="text-yellow-600">Pending KYC</span></p></div></div><div onclick="openKYC()" class="border-2 border-gold bg-yellow-50 rounded-xl p-3 flex justify-between cursor-pointer"><span class="font-semibold">KYC Verification</span><span class="text-gold text-xs font-bold">Upload ID ›</span></div><div onclick="showScreen('screen-security')" class="border rounded-xl p-3 flex justify-between cursor-pointer"><span>Security</span><span>›</span></div><div onclick="showScreen('screen-paymethods')" class="border rounded-xl p-3 flex justify-between cursor-pointer"><span>Payment Methods</span><span>›</span></div><div onclick="showScreen('screen-settings')" class="border rounded-xl p-3 flex justify-between cursor-pointer"><span>Settings</span><span>›</span></div><div onclick="openSupportChat()" class="border rounded-xl p-3 flex justify-between cursor-pointer bg-navy text-white"><span>Support - Live Chat</span><span class="text-gold text-xs">● Automated ›</span></div><button onclick="showScreen('screen-login');document.getElementById('topHeader').classList.add('hide');document.getElementById('bottomNav').classList.add('hide');" class="w-full bg-red-50 text-red-600 py-3 rounded-xl mt-4 font-bold">Log Out</button></div></div>
+<div id="screen-menu" class="hide px-4 py-4"><button onclick="showScreen('screen-home')" class="text-sm text-navy mb-3"><i class="fa-solid fa-arrow-left"></i> Back</button><h3 class="font-bold text-lg">Menu / Profile</h3><div class="mt-4 space-y-3"><div class="border rounded-xl p-4 flex gap-3 items-center"><div class="w-12 h-12 bg-navy rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-user"></i></div><div><p class="font-bold" id="userEmail">admin@tiva.com</p><p class="text-xs">ID: <span id="uniqueID" class="font-bold text-navy">TIVA-4895251</span> • <span id="kycStatus" class="text-yellow-600">Pending KYC</span></p></div></div><div onclick="openKYC()" class="border-2 border-gold bg-yellow-50 rounded-xl p-3 flex justify-between cursor-pointer"><span class="font-semibold">KYC Verification</span><span class="text-gold text-xs font-bold">Upload ID ›</span></div><div onclick="showScreen('screen-security')" class="border rounded-xl p-3 flex justify-between cursor-pointer"><span>Security</span><span>›</span></div><div onclick="showScreen('screen-paymethods')" class="border rounded-xl p-3 flex justify-between cursor-pointer"><span>Payment Methods</span><span>›</span></div><div onclick="showScreen('screen-settings')" class="border rounded-xl p-3 flex justify-between cursor-pointer"><span>Settings</span><span>›</span></div><div onclick="openSupportChat()" class="border rounded-xl p-3 flex justify-between cursor-pointer bg-navy text-white"><span>Support - Live Chat</span><span class="text-gold text-xs">● Automated ›</span></div><button onclick="doLogout()" class="w-full bg-red-50 text-red-600 py-3 rounded-xl mt-4 font-bold">Log Out</button></div></div>
 
 <div id="screen-kyc" class="hide px-4 py-4"><button onclick="showScreen('screen-menu')" class="text-sm text-navy mb-3"><i class="fa-solid fa-arrow-left"></i> Back</button><h3 class="font-bold text-lg">KYC Verification</h3><p class="text-xs">ID: <span id="kycIDDisplay">TIVA-4895251</span> — Admin verifies</p><div class="mt-4 space-y-4"><input type="file" id="idFront" class="w-full border rounded-xl py-3 px-3"><input type="file" id="idBack" class="w-full border rounded-xl py-3 px-3"><input type="file" id="selfie" class="w-full border rounded-xl py-3 px-3"><button onclick="submitKYC()" class="w-full bg-gold text-white py-3 rounded-xl font-bold">Submit KYC</button><p id="kycResult" class="text-center text-xs font-bold"></p></div></div>
 
@@ -91,7 +121,84 @@
 
 <script>
 function showScreen(id){document.querySelectorAll('[id^=screen-]').forEach(s=>s.classList.add('hide'));document.getElementById(id).classList.remove('hide');window.scrollTo(0,0);}
-function showApp(){const e=document.getElementById('loginEmail').value||'admin@tiva.com';document.getElementById('userEmail').innerText=e;document.getElementById('topHeader').classList.remove('hide');document.getElementById('bottomNav').classList.remove('hide');generateTivaID();switchBottom('home');}
+
+// === SECURE AUTH PATCH - DERIV FLOW ===
+let pendingCode = "";
+let pendingEmail = "";
+
+function showLogin(){ document.getElementById('loginForm').classList.remove('hide'); document.getElementById('signupForm').classList.add('hide'); document.getElementById('verifyForm').classList.add('hide'); document.getElementById('setPassForm').classList.add('hide'); }
+function showSignup(){ document.getElementById('loginForm').classList.add('hide'); document.getElementById('signupForm').classList.remove('hide'); document.getElementById('verifyForm').classList.add('hide'); document.getElementById('setPassForm').classList.add('hide'); }
+
+function doSignup(){
+  let email = document.getElementById('signupEmail').value.trim().toLowerCase();
+  if(!email ||!email.includes('@')){ alert('Enter valid email'); return; }
+  pendingEmail = email;
+  pendingCode = Math.floor(100000 + Math.random()*900000).toString();
+  document.getElementById('verifyEmailShow').innerText = email;
+  document.getElementById('fakeCodeShow').innerText = pendingCode;
+  alert('TIVA Code: ' + pendingCode + ' - Your verification code (will be email in production)');
+  document.getElementById('signupForm').classList.add('hide');
+  document.getElementById('verifyForm').classList.remove('hide');
+}
+function doVerify(){
+  let c = document.getElementById('verifyCode').value.trim();
+  if(c!== pendingCode){ alert('Wrong code, correct is: ' + pendingCode); return; }
+  document.getElementById('verifyForm').classList.add('hide');
+  document.getElementById('setPassForm').classList.remove('hide');
+}
+function doCreateAccount(){
+  let p = document.getElementById('newPass').value;
+  if(p.length < 8){ alert('Password must be 8+ chars'); return; }
+  let users = JSON.parse(localStorage.getItem('tiva_users') || '{}');
+  users[pendingEmail] = { password: p, country: document.getElementById('signupCountry').value, id: 'TIVA-'+Math.floor(400000+Math.random()*100000) };
+  localStorage.setItem('tiva_users', JSON.stringify(users));
+  localStorage.setItem('tiva_current', pendingEmail);
+  localStorage.setItem('tiva_logged', '1');
+  startApp(pendingEmail);
+}
+function doLogin(){
+  let email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  let pass = document.getElementById('loginPass').value;
+  if(!email ||!pass){ alert('Enter email and password'); return; }
+  let users = JSON.parse(localStorage.getItem('tiva_users') || '{}');
+  if(email === 'admin@tiva.com' &&!users[email]){ users[email] = { password: 'admin12345', country:'Kenya', id: document.getElementById('uniqueID').innerText }; localStorage.setItem('tiva_users', JSON.stringify(users)); }
+  if(!users[email]){ alert('Account not found, please Sign up first'); showSignup(); return; }
+  if(users[email].password!== pass){ alert('Wrong password'); return; }
+  localStorage.setItem('tiva_current', email);
+  localStorage.setItem('tiva_logged', '1');
+  startApp(email);
+}
+function startApp(email){
+  document.getElementById('screen-login').classList.add('hide');
+  document.getElementById('userEmail').innerText = email;
+  document.getElementById('topHeader').classList.remove('hide');
+  document.getElementById('bottomNav').classList.remove('hide');
+  generateTivaID();
+  let users = JSON.parse(localStorage.getItem('tiva_users') || '{}');
+  if(users[email] && users[email].id){ document.getElementById('uniqueID').innerText = users[email].id; document.getElementById('kycIDDisplay').innerText = users[email].id; }
+  switchBottom('home');
+}
+function doLogout(){
+  localStorage.removeItem('tiva_logged');
+  localStorage.removeItem('tiva_current');
+  document.getElementById('topHeader').classList.add('hide');
+  document.getElementById('bottomNav').classList.add('hide');
+  document.querySelectorAll('[id^=screen-]').forEach(s=>s.classList.add('hide'));
+  document.getElementById('screen-login').classList.remove('hide');
+  showLogin();
+  document.getElementById('loginPass').value='';
+}
+function showApp(){ doLogin(); } // legacy call fix
+
+// Auto check on load - secure
+window.addEventListener('load', function(){
+  if(localStorage.getItem('tiva_logged')==='1' && localStorage.getItem('tiva_current')){
+    let email = localStorage.getItem('tiva_current');
+    let users = JSON.parse(localStorage.getItem('tiva_users') || '{}');
+    if(users[email]){ startApp(email); }
+  }
+});
+
 let activeAccount='real';function switchAccount(type){activeAccount=type;const realVal=document.getElementById('realBal').innerText;if(type==='real'){document.getElementById('realCard').className='mt-6 bg-navy border-2 border-gold rounded-xl p-4 text-white flex justify-between items-center cursor-pointer';document.getElementById('demoCard').className='mt-3 border rounded-xl p-4 flex justify-between cursor-pointer';document.getElementById('portRealCard').className='border-2 border-gold bg-yellow-50 rounded-xl p-3 cursor-pointer';document.getElementById('portDemoCard').className='border rounded-xl p-3 cursor-pointer';document.getElementById('activeTrading').innerText='Trading on: Real Account (Live - Till 4372049)';document.getElementById('portMode').innerText='REAL MODE - Live money';document.getElementById('portBadge').innerText='USD • REAL';document.getElementById('totalBal').innerHTML=realVal+' <span class="text-lg">USD</span> - REAL';document.getElementById('portTotal').innerText=realVal;}else{document.getElementById('realCard').className='mt-6 bg-white border rounded-xl p-4 text-navy flex justify-between items-center cursor-pointer';document.getElementById('demoCard').className='mt-3 border-2 border-gold bg-yellow-50 rounded-xl p-4 flex justify-between cursor-pointer';document.getElementById('portRealCard').className='border rounded-xl p-3 cursor-pointer';document.getElementById('portDemoCard').className='border-2 border-gold bg-yellow-50 rounded-xl p-3 cursor-pointer';document.getElementById('activeTrading').innerText='Trading on: Demo Account ($10,000 practice)';document.getElementById('portMode').innerText='DEMO MODE - Practice $10,000';document.getElementById('portBadge').innerText='USD • DEMO';document.getElementById('totalBal').innerHTML='10,000.00 <span class="text-lg">USD</span> - DEMO';document.getElementById('portTotal').innerText='$10,000.00';}}
 function switchBottom(tab){document.querySelectorAll('[id^=nav-]').forEach(b=>{b.classList.remove('text-gold');b.classList.add('text-gray-400');});const cur=document.getElementById('nav-'+tab);cur.classList.add('text-gold');cur.classList.remove('text-gray-400');if(tab==='home')showScreen('screen-home');if(tab==='cfds')showScreen('screen-cfds');if(tab==='options')showScreen('screen-options');if(tab==='portfolio')showScreen('screen-portfolio');}
 const markets=[{s:'Volatility 10 Index',p:4123.12,ch:'+0.45%'},{s:'Volatility 25 Index',p:5234.89,ch:'+1.12%'},{s:'Volatility 50 Index',p:6345.22,ch:'-0.33%'},{s:'Volatility 75 Index',p:7456.90,ch:'+0.78%'},{s:'Volatility 100 Index',p:8567.11,ch:'+1.45%'},{s:'Volatility 10 (1s) Index',p:4123.55,ch:'+0.22%'},{s:'Volatility 25 (1s) Index',p:5235.10,ch:'-0.12%'},{s:'Volatility 50 (1s) Index',p:6346.00,ch:'+0.90%'},{s:'Volatility 75 (1s) Index',p:7457.33,ch:'+0.55%'},{s:'Volatility 100 (1s) Index',p:879.45,ch:'+1.23%'},{s:'Crash 300 Index',p:3123.44,ch:'-2.11%'},{s:'Crash 500 Index',p:5123.44,ch:'-1.89%'},{s:'Boom 500 Index',p:5323.44,ch:'+1.89%'},{s:'Jump 10 Index',p:4123.12,ch:'+0.12%'},{s:'EUR/USD',p:1.0845,ch:'+0.12%'},{s:'GBP/USD',p:1.2745,ch:'-0.08%'}];
